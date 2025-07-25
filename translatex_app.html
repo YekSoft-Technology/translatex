@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TranslateX - Gelişmiş Çeviri Programı</title>
+    <title>Metin Araçları - Gelişmiş Metin İşleme Programı</title>
     <style>
         * {
             margin: 0;
@@ -149,6 +149,8 @@
             min-height: 60px;
             font-size: 16px;
             line-height: 1.5;
+            white-space: pre-wrap; /* Sonucun formatını koru */
+            word-wrap: break-word; /* Uzun kelimeleri böl */
         }
 
         .morse-container {
@@ -184,34 +186,6 @@
             }
         }
 
-        .language-selector {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .lang-select {
-            flex: 1;
-        }
-
-        .swap-btn {
-            background: #e74c3c;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            cursor: pointer;
-            font-size: 18px;
-            transition: all 0.3s ease;
-        }
-
-        .swap-btn:hover {
-            background: #c0392b;
-            transform: rotate(180deg);
-        }
-
         .feature-info {
             background: #ecf0f1;
             padding: 15px;
@@ -220,61 +194,66 @@
             font-size: 14px;
             color: #555;
         }
+
+        .copy-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            transition: background 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            background: #2980b9;
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+            background: #eaf2f8;
+            padding: 15px;
+            border-radius: 8px;
+        }
+
+        .stat-item {
+            text-align: center;
+            font-size: 1.1em;
+            color: #2c3e50;
+        }
+
+        .stat-item strong {
+            display: block;
+            font-size: 1.5em;
+            color: #3498db;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>TranslateX</h1>
-            <p class="subtitle">Gelişmiş Çeviri ve Metin Dönüştürme Aracı</p>
+            <h1>Metin Araçları Merkezi</h1>
+            <p class="subtitle">Gelişmiş Metin İşleme ve Dönüştürme Araçları</p>
         </header>
 
         <div class="tool-selector">
-            <button class="tool-btn active" onclick="showTool('translate')">📝 Çeviri</button>
-            <button class="tool-btn" onclick="showTool('reverse')">🔄 Ters Yazı</button>
+            <button class="tool-btn active" onclick="showTool('reverse')">🔄 Ters Yazı</button>
             <button class="tool-btn" onclick="showTool('morse')">📡 Mors Kodu</button>
             <button class="tool-btn" onclick="showTool('binary')">💻 Binary</button>
             <button class="tool-btn" onclick="showTool('caesar')">🔐 Caesar Şifre</button>
             <button class="tool-btn" onclick="showTool('base64')">🔒 Base64</button>
             <button class="tool-btn" onclick="showTool('case')">📄 Metin Formatı</button>
+            <button class="tool-btn" onclick="showTool('repeat')">🔁 Metin Tekrarı</button>
+            <button class="tool-btn" onclick="showTool('whitespace')">📏 Boşluk Silici</button>
+            <button class="tool-btn" onclick="showTool('cleaner')">🧼 Metin Temizleyici</button>
+            <button class="tool-btn" onclick="showTool('counter')">📊 Sözcük/Karakter Sayacı</button>
         </div>
 
-        <!-- Çeviri Paneli -->
-        <div id="translate" class="tool-panel active">
-            <div class="feature-info">
-                <strong>Çeviri Aracı:</strong> Metinlerinizi farklı dillere çevirin. Şu anda İngilizce çeviri desteklenmektedir.
-            </div>
-            <div class="language-selector">
-                <select id="fromLang" class="lang-select">
-                    <option value="tr">Türkçe</option>
-                    <option value="en">English</option>
-                </select>
-                <button class="swap-btn" onclick="swapLanguages()" title="Dilleri Değiştir">⇄</button>
-                <select id="toLang" class="lang-select">
-                    <option value="en">English</option>
-                    <option value="tr">Türkçe</option>
-                </select>
-            </div>
-            <div class="grid-2">
-                <div>
-                    <div class="input-group">
-                        <label>Kaynak Metin:</label>
-                        <textarea id="sourceText" placeholder="Çevrilecek metni buraya yazın..."></textarea>
-                    </div>
-                </div>
-                <div>
-                    <div class="input-group">
-                        <label>Çeviri Sonucu:</label>
-                        <div id="translateResult" class="result">Çeviri burada görünecek...</div>
-                    </div>
-                </div>
-            </div>
-            <button class="btn" onclick="translateText()">Çevir</button>
-            <button class="btn btn-secondary" onclick="clearTranslate()">Temizle</button>
-        </div>
-
-        <!-- Ters Yazı Paneli -->
-        <div id="reverse" class="tool-panel">
+        <div id="reverse" class="tool-panel active">
             <div class="feature-info">
                 <strong>Ters Yazı:</strong> Metninizi karakterler veya kelimeler bazında tersine çevirin.
             </div>
@@ -292,9 +271,9 @@
             <button class="btn" onclick="reverseText()">Tersine Çevir</button>
             <button class="btn btn-secondary" onclick="clearReverse()">Temizle</button>
             <div id="reverseResult" class="result">Sonuç burada görünecek...</div>
+            <button class="copy-btn" onclick="copyToClipboard('reverseResult')">Kopyala</button>
         </div>
 
-        <!-- Mors Kodu Paneli -->
         <div id="morse" class="tool-panel">
             <div class="feature-info">
                 <strong>Mors Kodu:</strong> Metninizi mors koduna çevirin veya mors kodunu metne dönüştürün.
@@ -313,9 +292,9 @@
             <button class="btn" onclick="processMorse()">Dönüştür</button>
             <button class="btn btn-secondary" onclick="clearMorse()">Temizle</button>
             <div id="morseResult" class="result morse-container">Sonuç burada görünecek...</div>
+            <button class="copy-btn" onclick="copyToClipboard('morseResult')">Kopyala</button>
         </div>
 
-        <!-- Binary Paneli -->
         <div id="binary" class="tool-panel">
             <div class="feature-info">
                 <strong>Binary Dönüştürücü:</strong> Metni binary koda çevirin veya binary kodu metne dönüştürün.
@@ -334,9 +313,9 @@
             <button class="btn" onclick="processBinary()">Dönüştür</button>
             <button class="btn btn-secondary" onclick="clearBinary()">Temizle</button>
             <div id="binaryResult" class="result binary-container">Sonuç burada görünecek...</div>
+            <button class="copy-btn" onclick="copyToClipboard('binaryResult')">Kopyala</button>
         </div>
 
-        <!-- Caesar Şifre Paneli -->
         <div id="caesar" class="tool-panel">
             <div class="feature-info">
                 <strong>Caesar Şifreleme:</strong> Metni Caesar şifreleme algoritması ile şifreleyin veya çözün.
@@ -359,9 +338,9 @@
             <button class="btn" onclick="processCaesar()">İşle</button>
             <button class="btn btn-secondary" onclick="clearCaesar()">Temizle</button>
             <div id="caesarResult" class="result">Sonuç burada görünecek...</div>
+            <button class="copy-btn" onclick="copyToClipboard('caesarResult')">Kopyala</button>
         </div>
 
-        <!-- Base64 Paneli -->
         <div id="base64" class="tool-panel">
             <div class="feature-info">
                 <strong>Base64 Kodlama:</strong> Metni Base64 formatına kodlayın veya Base64 kodunu çözün.
@@ -380,9 +359,9 @@
             <button class="btn" onclick="processBase64()">Dönüştür</button>
             <button class="btn btn-secondary" onclick="clearBase64()">Temizle</button>
             <div id="base64Result" class="result">Sonuç burada görünecek...</div>
+            <button class="copy-btn" onclick="copyToClipboard('base64Result')">Kopyala</button>
         </div>
 
-        <!-- Metin Formatı Paneli -->
         <div id="case" class="tool-panel">
             <div class="feature-info">
                 <strong>Metin Formatı:</strong> Metninizin büyük/küçük harf formatını değiştirin.
@@ -399,59 +378,100 @@
                 <button class="btn btn-secondary" onclick="clearCase()">Temizle</button>
             </div>
             <div id="caseResult" class="result">Sonuç burada görünecek...</div>
+            <button class="copy-btn" onclick="copyToClipboard('caseResult')">Kopyala</button>
         </div>
+
+        <div id="repeat" class="tool-panel">
+            <div class="feature-info">
+                <strong>Metin Tekrarı:</strong> Bir metni istediğiniz sayıda tekrarlayın.
+            </div>
+            <div class="input-group">
+                <label>Tekrarlanacak Metin:</label>
+                <textarea id="repeatInput" placeholder="Tekrarlanacak metni buraya yazın..."></textarea>
+            </div>
+            <div class="input-group">
+                <label>Tekrar Sayısı:</label>
+                <input type="number" id="repeatCount" value="10" min="1">
+            </div>
+            <button class="btn" onclick="repeatText()">Tekrarla</button>
+            <button class="btn btn-secondary" onclick="clearRepeat()">Temizle</button>
+            <div id="repeatResult" class="result">Tekrarlanan metin burada görünecek...</div>
+            <button class="copy-btn" onclick="copyToClipboard('repeatResult')">Kopyala</button>
+        </div>
+
+        <div id="whitespace" class="tool-panel">
+            <div class="feature-info">
+                <strong>Boşluk Silici:</strong> Metindeki fazla boşlukları (başı, sonu, birden fazla boşluk) kaldırın.
+            </div>
+            <div class="input-group">
+                <label>Metin:</label>
+                <textarea id="whitespaceInput" placeholder="Boşlukları temizlenecek metni yazın..."></textarea>
+            </div>
+            <button class="btn" onclick="removeWhitespace()">Boşlukları Temizle</button>
+            <button class="btn btn-secondary" onclick="clearWhitespace()">Temizle</button>
+            <div id="whitespaceResult" class="result">Temizlenmiş metin burada görünecek...</div>
+            <button class="copy-btn" onclick="copyToClipboard('whitespaceResult')">Kopyala</button>
+        </div>
+
+        <div id="cleaner" class="tool-panel">
+            <div class="feature-info">
+                <strong>Metin Temizleyici:</strong> Metindeki özel karakterleri, sayıları veya belirli ifadeleri kaldırın.
+            </div>
+            <div class="input-group">
+                <label>Metin:</label>
+                <textarea id="cleanerInput" placeholder="Temizlenecek metni buraya yazın..."></textarea>
+            </div>
+            <div class="input-group">
+                <label>Temizleme Seçenekleri:</label>
+                <input type="checkbox" id="removeNumbers"> Sayıları Kaldır <br>
+                <input type="checkbox" id="removeSpecialChars"> Özel Karakterleri Kaldır (örn: @#$%^&*)<br>
+                <input type="checkbox" id="removePunctuation"> Noktalama İşaretlerini Kaldır (örn: .,;!?)<br>
+                <label for="customCharsToRemove">Özel Karakterleri Kaldır (Elle Gir):</label>
+                <input type="text" id="customCharsToRemove" placeholder="örn: abc, .-*">
+            </div>
+            <button class="btn" onclick="cleanText()">Temizle</button>
+            <button class="btn btn-secondary" onclick="clearCleaner()">Temizle</button>
+            <div id="cleanerResult" class="result">Temizlenmiş metin burada görünecek...</div>
+            <button class="copy-btn" onclick="copyToClipboard('cleanerResult')">Kopyala</button>
+        </div>
+
+        <div id="counter" class="tool-panel">
+            <div class="feature-info">
+                <strong>Sözcük ve Karakter Sayacı:</strong> Metindeki sözcük, karakter (boşluklu/boşluksuz), satır ve paragraf sayısını gösterir.
+            </div>
+            <div class="input-group">
+                <label>Metin:</label>
+                <textarea id="counterInput" oninput="updateCounts()" placeholder="Sayılacak metni buraya yazın..."></textarea>
+            </div>
+            <button class="btn btn-secondary" onclick="clearCounter()">Temizle</button>
+            <div class="stats-container">
+                <div class="stat-item">
+                    <strong><span id="wordCount">0</span></strong>
+                    Sözcük
+                </div>
+                <div class="stat-item">
+                    <strong><span id="charCount">0</span></strong>
+                    Karakter (Boşluksuz)
+                </div>
+                <div class="stat-item">
+                    <strong><span id="charWithSpacesCount">0</span></strong>
+                    Karakter (Boşluklu)
+                </div>
+                <div class="stat-item">
+                    <strong><span id="lineCount">0</span></strong>
+                    Satır
+                </div>
+                <div class="stat-item">
+                    <strong><span id="paragraphCount">0</span></strong>
+                    Paragraf
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        // Basit çeviri sözlüğü
-        const translations = {
-            'tr_to_en': {
-                'merhaba': 'hello',
-                'dünya': 'world',
-                'nasılsın': 'how are you',
-                'teşekkürler': 'thank you',
-                'günaydın': 'good morning',
-                'iyi geceler': 'good night',
-                'evet': 'yes',
-                'hayır': 'no',
-                'lütfen': 'please',
-                'özür dilerim': 'sorry',
-                'aşk': 'love',
-                'arkadaş': 'friend',
-                'aile': 'family',
-                'okul': 'school',
-                'ev': 'home',
-                'su': 'water',
-                'yemek': 'food',
-                'kitap': 'book',
-                'araba': 'car',
-                'zaman': 'time'
-            },
-            'en_to_tr': {
-                'hello': 'merhaba',
-                'world': 'dünya',
-                'how are you': 'nasılsın',
-                'thank you': 'teşekkürler',
-                'good morning': 'günaydın',
-                'good night': 'iyi geceler',
-                'yes': 'evet',
-                'no': 'hayır',
-                'please': 'lütfen',
-                'sorry': 'özür dilerim',
-                'love': 'aşk',
-                'friend': 'arkadaş',
-                'family': 'aile',
-                'school': 'okul',
-                'home': 'ev',
-                'water': 'su',
-                'food': 'yemek',
-                'book': 'kitab',
-                'car': 'araba',
-                'time': 'zaman'
-            }
-        };
-
-        // Mors kodu alfabesi
+        // Mors kodu alfabesi (mevcut)
         const morseCode = {
             'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
             'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
@@ -461,11 +481,10 @@
             '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...',
             '8': '---..', '9': '----.', ' ': '/'
         };
-
         const reverseMorse = Object.fromEntries(Object.entries(morseCode).map(([k, v]) => [v, k]));
 
+        // Araç panelini gösterme işlevi (mevcut)
         function showTool(tool) {
-            // Tüm panelleri gizle
             document.querySelectorAll('.tool-panel').forEach(panel => {
                 panel.classList.remove('active');
             });
@@ -473,49 +492,16 @@
                 btn.classList.remove('active');
             });
 
-            // Seçilen paneli göster
             document.getElementById(tool).classList.add('active');
-            event.target.classList.add('active');
-        }
+            event.target.classList.add('active'); // Tıklanan butona active sınıfı ekle
 
-        function swapLanguages() {
-            const fromLang = document.getElementById('fromLang');
-            const toLang = document.getElementById('toLang');
-            const temp = fromLang.value;
-            fromLang.value = toLang.value;
-            toLang.value = temp;
-        }
-
-        function translateText() {
-            const sourceText = document.getElementById('sourceText').value.toLowerCase().trim();
-            const fromLang = document.getElementById('fromLang').value;
-            const toLang = document.getElementById('toLang').value;
-            
-            if (!sourceText) {
-                document.getElementById('translateResult').textContent = 'Lütfen çevrilecek metin girin.';
-                return;
+            // Sayaç aracı seçildiğinde sayımları güncelle
+            if (tool === 'counter') {
+                updateCounts();
             }
-
-            const dictKey = fromLang + '_to_' + toLang;
-            const dict = translations[dictKey];
-            
-            if (!dict) {
-                document.getElementById('translateResult').textContent = 'Bu dil çifti henüz desteklenmiyor.';
-                return;
-            }
-
-            let result = sourceText;
-            for (const [key, value] of Object.entries(dict)) {
-                result = result.replace(new RegExp(key, 'gi'), value);
-            }
-
-            document.getElementById('translateResult').textContent = result;
         }
 
-        function clearTranslate() {
-            document.getElementById('sourceText').value = '';
-            document.getElementById('translateResult').textContent = 'Çeviri burada görünecek...';
-        }
+        // --- Mevcut Fonksiyonlar ---
 
         function reverseText() {
             const input = document.getElementById('reverseInput').value;
@@ -552,9 +538,9 @@
 
             let result;
             if (type === 'encode') {
-                result = input.toUpperCase().split('').map(char => morseCode[char] || char).join(' ');
+                result = input.toUpperCase().split('').map(char => morseCode[char] || '').join(' '); // Bilinmeyen karakterleri boş bırak
             } else {
-                result = input.split(' ').map(code => reverseMorse[code] || code).join('');
+                result = input.split(' ').map(code => reverseMorse[code] || '?').join(''); // Bilinmeyen kodlar için '?'
             }
 
             document.getElementById('morseResult').textContent = result;
@@ -579,10 +565,12 @@
                 if (type === 'encode') {
                     result = input.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0')).join(' ');
                 } else {
-                    result = input.split(' ').map(binary => String.fromCharCode(parseInt(binary, 2))).join('');
+                    // Binary'den metne çevirirken sadece 8'li grupları işler
+                    const binaryChunks = input.split(' ').filter(chunk => chunk.match(/^[01]{8}$/));
+                    result = binaryChunks.map(binary => String.fromCharCode(parseInt(binary, 2))).join('');
                 }
             } catch (e) {
-                result = 'Geçersiz format!';
+                result = 'Geçersiz format! Lütfen doğru binary veya metin girin.';
             }
 
             document.getElementById('binaryResult').textContent = result;
@@ -607,8 +595,8 @@
             const result = input.split('').map(char => {
                 if (char.match(/[a-zA-Z]/)) {
                     const code = char.charCodeAt(0);
-                    const base = code >= 65 && code <= 90 ? 65 : 97;
-                    return String.fromCharCode(((code - base + actualShift + 26) % 26) + base);
+                    const base = code >= 65 && code <= 90 ? 65 : 97; // Büyük veya küçük harf tabanı
+                    return String.fromCharCode(((code - base + actualShift % 26 + 26) % 26) + base);
                 }
                 return char;
             }).join('');
@@ -638,7 +626,7 @@
                     result = decodeURIComponent(escape(atob(input)));
                 }
             } catch (e) {
-                result = 'Geçersiz format!';
+                result = 'Geçersiz Base64 formatı!';
             }
 
             document.getElementById('base64Result').textContent = result;
@@ -670,9 +658,12 @@
                         txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
                     break;
                 case 'sentence':
-                    result = input.toLowerCase().replace(/(^\w|[.!?]\s*\w)/g, txt => 
+                    // Her cümlenin ilk harfini büyük yapar
+                    result = input.toLowerCase().replace(/(^\s*\w|[.!?]\s*\w)/g, txt => 
                         txt.toUpperCase());
                     break;
+                default:
+                    result = input;
             }
 
             document.getElementById('caseResult').textContent = result;
@@ -682,6 +673,135 @@
             document.getElementById('caseInput').value = '';
             document.getElementById('caseResult').textContent = 'Sonuç burada görünecek...';
         }
+
+        // --- Yeni Fonksiyonlar ---
+
+        function repeatText() {
+            const input = document.getElementById('repeatInput').value;
+            const count = parseInt(document.getElementById('repeatCount').value);
+
+            if (!input || isNaN(count) || count < 1) {
+                document.getElementById('repeatResult').textContent = 'Lütfen geçerli bir metin ve tekrar sayısı girin.';
+                return;
+            }
+
+            const result = input.repeat(count);
+            document.getElementById('repeatResult').textContent = result;
+        }
+
+        function clearRepeat() {
+            document.getElementById('repeatInput').value = '';
+            document.getElementById('repeatCount').value = 10;
+            document.getElementById('repeatResult').textContent = 'Tekrarlanan metin burada görünecek...';
+        }
+
+        function removeWhitespace() {
+            const input = document.getElementById('whitespaceInput').value;
+            
+            if (!input) {
+                document.getElementById('whitespaceResult').textContent = 'Lütfen boşlukları temizlenecek metin girin.';
+                return;
+            }
+
+            // Baştaki ve sondaki boşlukları sil
+            let result = input.trim();
+            // Birden fazla boşluğu tek boşluğa indir
+            result = result.replace(/\s+/g, ' '); 
+
+            document.getElementById('whitespaceResult').textContent = result;
+        }
+
+        function clearWhitespace() {
+            document.getElementById('whitespaceInput').value = '';
+            document.getElementById('whitespaceResult').textContent = 'Temizlenmiş metin burada görünecek...';
+        }
+
+        function cleanText() {
+            let input = document.getElementById('cleanerInput').value;
+            const removeNumbers = document.getElementById('removeNumbers').checked;
+            const removeSpecialChars = document.getElementById('removeSpecialChars').checked;
+            const removePunctuation = document.getElementById('removePunctuation').checked;
+            const customCharsToRemove = document.getElementById('customCharsToRemove').value;
+
+            if (!input) {
+                document.getElementById('cleanerResult').textContent = 'Lütfen temizlenecek metin girin.';
+                return;
+            }
+
+            if (removeNumbers) {
+                input = input.replace(/[0-9]/g, '');
+            }
+            if (removeSpecialChars) {
+                // Sadece alfanümerik olmayan ve noktalama olmayan özel karakterleri kaldır
+                input = input.replace(/[^a-zA-Z0-9\s.,!?;:'"()\[\]{}\-]/g, '');
+            }
+            if (removePunctuation) {
+                input = input.replace(/[.,;!?'"()\[\]{}]/g, '');
+            }
+            if (customCharsToRemove) {
+                // Kullanıcının girdiği özel karakterleri kaldır
+                const escapedCustomChars = customCharsToRemove.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); // Regex özel karakterlerini kaçır
+                const regex = new RegExp(`[${escapedCustomChars}]`, 'g');
+                input = input.replace(regex, '');
+            }
+
+            document.getElementById('cleanerResult').textContent = input;
+        }
+
+        function clearCleaner() {
+            document.getElementById('cleanerInput').value = '';
+            document.getElementById('removeNumbers').checked = false;
+            document.getElementById('removeSpecialChars').checked = false;
+            document.getElementById('removePunctuation').checked = false;
+            document.getElementById('customCharsToRemove').value = '';
+            document.getElementById('cleanerResult').textContent = 'Temizlenmiş metin burada görünecek...';
+        }
+
+        function updateCounts() {
+            const input = document.getElementById('counterInput').value;
+
+            // Sözcük Sayısı
+            const words = input.match(/\b\w+\b/g); // Kelimeleri bulan regex
+            document.getElementById('wordCount').textContent = words ? words.length : 0;
+
+            // Karakter Sayısı (Boşluksuz)
+            const charsNoSpaces = input.replace(/\s/g, '').length;
+            document.getElementById('charCount').textContent = charsNoSpaces;
+
+            // Karakter Sayısı (Boşluklu)
+            document.getElementById('charWithSpacesCount').textContent = input.length;
+
+            // Satır Sayısı
+            const lines = input.split('\n');
+            document.getElementById('lineCount').textContent = lines.length;
+
+            // Paragraf Sayısı
+            // En az bir harf veya rakam içeren ve boşluk olmayan satırları paragraf olarak say
+            const paragraphs = input.split(/\n\s*\n/).filter(p => p.trim() !== ''); 
+            document.getElementById('paragraphCount').textContent = paragraphs.length;
+        }
+
+        function clearCounter() {
+            document.getElementById('counterInput').value = '';
+            updateCounts(); // Temizledikten sonra sayımları sıfırla
+        }
+
+        // Kopyalama işlevi
+        function copyToClipboard(elementId) {
+            const textToCopy = document.getElementById(elementId).textContent;
+            navigator.clipboard.writeText(textToCopy)
+                .then(() => {
+                    alert('Sonuç panoya kopyalandı!');
+                })
+                .catch(err => {
+                    console.error('Kopyalama başarısız oldu: ', err);
+                });
+        }
+
+        // Sayfa yüklendiğinde varsayılan olarak Ters Yazı panelini göster
+        document.addEventListener('DOMContentLoaded', () => {
+            showTool('reverse');
+        });
     </script>
 </body>
 </html>
