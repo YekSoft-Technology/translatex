@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TranslateX - Gelişmiş Çeviri Programı</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffffff;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        h1 {
+            color: #2c3e50;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1em;
+        }
+
+        .tool-selector {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .tool-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .tool-btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .tool-btn.active {
+            background: #2c3e50;
+        }
+
+        .tool-panel {
+            display: none;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .tool-panel.active {
+            display: block;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        textarea, input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        textarea:focus, input:focus, select:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #219a52;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .result {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            min-height: 60px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .morse-container {
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+            font-size: 18px;
+        }
+
+        .binary-container {
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+            font-size: 14px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+            
+            .tool-selector {
+                justify-content: center;
+            }
+            
+            .tool-btn {
+                padding: 10px 16px;
+                font-size: 12px;
+            }
+        }
+
+        .language-selector {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .lang-select {
+            flex: 1;
+        }
+
+        .swap-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+
+        .swap-btn:hover {
+            background: #c0392b;
+            transform: rotate(180deg);
+        }
+
+        .feature-info {
+            background: #ecf0f1;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>TranslateX</h1>
+            <p class="subtitle">Gelişmiş Çeviri ve Metin Dönüştürme Aracı</p>
+        </header>
+
+        <div class="tool-selector">
+            <button class="tool-btn active" onclick="showTool('translate')">📝 Çeviri</button>
+            <button class="tool-btn" onclick="showTool('reverse')">🔄 Ters Yazı</button>
+            <button class="tool-btn" onclick="showTool('morse')">📡 Mors Kodu</button>
+            <button class="tool-btn" onclick="showTool('binary')">💻 Binary</button>
+            <button class="tool-btn" onclick="showTool('caesar')">🔐 Caesar Şifre</button>
+            <button class="tool-btn" onclick="showTool('base64')">🔒 Base64</button>
+            <button class="tool-btn" onclick="showTool('case')">📄 Metin Formatı</button>
+        </div>
+
+        <!-- Çeviri Paneli -->
+        <div id="translate" class="tool-panel active">
+            <div class="feature-info">
+                <strong>Çeviri Aracı:</strong> Metinlerinizi farklı dillere çevirin. Şu anda İngilizce çeviri desteklenmektedir.
+            </div>
+            <div class="language-selector">
+                <select id="fromLang" class="lang-select">
+                    <option value="tr">Türkçe</option>
+                    <option value="en">English</option>
+                </select>
+                <button class="swap-btn" onclick="swapLanguages()" title="Dilleri Değiştir">⇄</button>
+                <select id="toLang" class="lang-select">
+                    <option value="en">English</option>
+                    <option value="tr">Türkçe</option>
+                </select>
+            </div>
+            <div class="grid-2">
+                <div>
+                    <div class="input-group">
+                        <label>Kaynak Metin:</label>
+                        <textarea id="sourceText" placeholder="Çevrilecek metni buraya yazın..."></textarea>
+                    </div>
+                </div>
+                <div>
+                    <div class="input-group">
+                        <label>Çeviri Sonucu:</label>
+                        <div id="translateResult" class="result">Çeviri burada görünecek...</div>
+                    </div>
+                </div>
+            </div>
+            <button class="btn" onclick="translateText()">Çevir</button>
+            <button class="btn btn-secondary" onclick="clearTranslate()">Temizle</button>
+        </div>
+
+        <!-- Ters Yazı Paneli -->
+        <div id="reverse" class="tool-panel">
+            <div class="feature-info">
+                <strong>Ters Yazı:</strong> Metninizi karakterler veya kelimeler bazında tersine çevirin.
+            </div>
+            <div class="input-group">
+                <label>Metin:</label>
+                <textarea id="reverseInput" placeholder="Tersine çevrilecek metni yazın..."></textarea>
+            </div>
+            <div class="input-group">
+                <label>Ters Çevirme Türü:</label>
+                <select id="reverseType">
+                    <option value="chars">Karakter Bazında (dcba)</option>
+                    <option value="words">Kelime Bazında (son ilk)</option>
+                </select>
+            </div>
+            <button class="btn" onclick="reverseText()">Tersine Çevir</button>
+            <button class="btn btn-secondary" onclick="clearReverse()">Temizle</button>
+            <div id="reverseResult" class="result">Sonuç burada görünecek...</div>
+        </div>
+
+        <!-- Mors Kodu Paneli -->
+        <div id="morse" class="tool-panel">
+            <div class="feature-info">
+                <strong>Mors Kodu:</strong> Metninizi mors koduna çevirin veya mors kodunu metne dönüştürün.
+            </div>
+            <div class="input-group">
+                <label>İşlem Türü:</label>
+                <select id="morseType">
+                    <option value="encode">Metin → Mors Kodu</option>
+                    <option value="decode">Mors Kodu → Metin</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Girdi:</label>
+                <textarea id="morseInput" placeholder="Metni veya mors kodunu yazın..."></textarea>
+            </div>
+            <button class="btn" onclick="processMorse()">Dönüştür</button>
+            <button class="btn btn-secondary" onclick="clearMorse()">Temizle</button>
+            <div id="morseResult" class="result morse-container">Sonuç burada görünecek...</div>
+        </div>
+
+        <!-- Binary Paneli -->
+        <div id="binary" class="tool-panel">
+            <div class="feature-info">
+                <strong>Binary Dönüştürücü:</strong> Metni binary koda çevirin veya binary kodu metne dönüştürün.
+            </div>
+            <div class="input-group">
+                <label>İşlem Türü:</label>
+                <select id="binaryType">
+                    <option value="encode">Metin → Binary</option>
+                    <option value="decode">Binary → Metin</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Girdi:</label>
+                <textarea id="binaryInput" placeholder="Metni veya binary kodu yazın..."></textarea>
+            </div>
+            <button class="btn" onclick="processBinary()">Dönüştür</button>
+            <button class="btn btn-secondary" onclick="clearBinary()">Temizle</button>
+            <div id="binaryResult" class="result binary-container">Sonuç burada görünecek...</div>
+        </div>
+
+        <!-- Caesar Şifre Paneli -->
+        <div id="caesar" class="tool-panel">
+            <div class="feature-info">
+                <strong>Caesar Şifreleme:</strong> Metni Caesar şifreleme algoritması ile şifreleyin veya çözün.
+            </div>
+            <div class="input-group">
+                <label>Kaydırma Miktarı:</label>
+                <input type="number" id="caesarShift" value="3" min="1" max="25">
+            </div>
+            <div class="input-group">
+                <label>İşlem Türü:</label>
+                <select id="caesarType">
+                    <option value="encode">Şifrele</option>
+                    <option value="decode">Çöz</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Metin:</label>
+                <textarea id="caesarInput" placeholder="Şifrelenecek veya çözülecek metni yazın..."></textarea>
+            </div>
+            <button class="btn" onclick="processCaesar()">İşle</button>
+            <button class="btn btn-secondary" onclick="clearCaesar()">Temizle</button>
+            <div id="caesarResult" class="result">Sonuç burada görünecek...</div>
+        </div>
+
+        <!-- Base64 Paneli -->
+        <div id="base64" class="tool-panel">
+            <div class="feature-info">
+                <strong>Base64 Kodlama:</strong> Metni Base64 formatına kodlayın veya Base64 kodunu çözün.
+            </div>
+            <div class="input-group">
+                <label>İşlem Türü:</label>
+                <select id="base64Type">
+                    <option value="encode">Metin → Base64</option>
+                    <option value="decode">Base64 → Metin</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Girdi:</label>
+                <textarea id="base64Input" placeholder="Metni veya Base64 kodunu yazın..."></textarea>
+            </div>
+            <button class="btn" onclick="processBase64()">Dönüştür</button>
+            <button class="btn btn-secondary" onclick="clearBase64()">Temizle</button>
+            <div id="base64Result" class="result">Sonuç burada görünecek...</div>
+        </div>
+
+        <!-- Metin Formatı Paneli -->
+        <div id="case" class="tool-panel">
+            <div class="feature-info">
+                <strong>Metin Formatı:</strong> Metninizin büyük/küçük harf formatını değiştirin.
+            </div>
+            <div class="input-group">
+                <label>Metin:</label>
+                <textarea id="caseInput" placeholder="Formatlanacak metni yazın..."></textarea>
+            </div>
+            <div class="input-group">
+                <button class="btn" onclick="processCase('upper')">BÜYÜK HARF</button>
+                <button class="btn" onclick="processCase('lower')">küçük harf</button>
+                <button class="btn" onclick="processCase('title')">Başlık Formatı</button>
+                <button class="btn" onclick="processCase('sentence')">Cümle formatı</button>
+                <button class="btn btn-secondary" onclick="clearCase()">Temizle</button>
+            </div>
+            <div id="caseResult" class="result">Sonuç burada görünecek...</div>
+        </div>
+    </div>
+
+    <script>
+        // Basit çeviri sözlüğü
+        const translations = {
+            'tr_to_en': {
+                'merhaba': 'hello',
+                'dünya': 'world',
+                'nasılsın': 'how are you',
+                'teşekkürler': 'thank you',
+                'günaydın': 'good morning',
+                'iyi geceler': 'good night',
+                'evet': 'yes',
+                'hayır': 'no',
+                'lütfen': 'please',
+                'özür dilerim': 'sorry',
+                'aşk': 'love',
+                'arkadaş': 'friend',
+                'aile': 'family',
+                'okul': 'school',
+                'ev': 'home',
+                'su': 'water',
+                'yemek': 'food',
+                'kitap': 'book',
+                'araba': 'car',
+                'zaman': 'time'
+            },
+            'en_to_tr': {
+                'hello': 'merhaba',
+                'world': 'dünya',
+                'how are you': 'nasılsın',
+                'thank you': 'teşekkürler',
+                'good morning': 'günaydın',
+                'good night': 'iyi geceler',
+                'yes': 'evet',
+                'no': 'hayır',
+                'please': 'lütfen',
+                'sorry': 'özür dilerim',
+                'love': 'aşk',
+                'friend': 'arkadaş',
+                'family': 'aile',
+                'school': 'okul',
+                'home': 'ev',
+                'water': 'su',
+                'food': 'yemek',
+                'book': 'kitab',
+                'car': 'araba',
+                'time': 'zaman'
+            }
+        };
+
+        // Mors kodu alfabesi
+        const morseCode = {
+            'A': '.-', 'B': '-...', 'C': '-.-.', 'D': '-..', 'E': '.', 'F': '..-.',
+            'G': '--.', 'H': '....', 'I': '..', 'J': '.---', 'K': '-.-', 'L': '.-..',
+            'M': '--', 'N': '-.', 'O': '---', 'P': '.--.', 'Q': '--.-', 'R': '.-.',
+            'S': '...', 'T': '-', 'U': '..-', 'V': '...-', 'W': '.--', 'X': '-..-',
+            'Y': '-.--', 'Z': '--..', '0': '-----', '1': '.----', '2': '..---',
+            '3': '...--', '4': '....-', '5': '.....', '6': '-....', '7': '--...',
+            '8': '---..', '9': '----.', ' ': '/'
+        };
+
+        const reverseMorse = Object.fromEntries(Object.entries(morseCode).map(([k, v]) => [v, k]));
+
+        function showTool(tool) {
+            // Tüm panelleri gizle
+            document.querySelectorAll('.tool-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+            document.querySelectorAll('.tool-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Seçilen paneli göster
+            document.getElementById(tool).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function swapLanguages() {
+            const fromLang = document.getElementById('fromLang');
+            const toLang = document.getElementById('toLang');
+            const temp = fromLang.value;
+            fromLang.value = toLang.value;
+            toLang.value = temp;
+        }
+
+        function translateText() {
+            const sourceText = document.getElementById('sourceText').value.toLowerCase().trim();
+            const fromLang = document.getElementById('fromLang').value;
+            const toLang = document.getElementById('toLang').value;
+            
+            if (!sourceText) {
+                document.getElementById('translateResult').textContent = 'Lütfen çevrilecek metin girin.';
+                return;
+            }
+
+            const dictKey = fromLang + '_to_' + toLang;
+            const dict = translations[dictKey];
+            
+            if (!dict) {
+                document.getElementById('translateResult').textContent = 'Bu dil çifti henüz desteklenmiyor.';
+                return;
+            }
+
+            let result = sourceText;
+            for (const [key, value] of Object.entries(dict)) {
+                result = result.replace(new RegExp(key, 'gi'), value);
+            }
+
+            document.getElementById('translateResult').textContent = result;
+        }
+
+        function clearTranslate() {
+            document.getElementById('sourceText').value = '';
+            document.getElementById('translateResult').textContent = 'Çeviri burada görünecek...';
+        }
+
+        function reverseText() {
+            const input = document.getElementById('reverseInput').value;
+            const type = document.getElementById('reverseType').value;
+            
+            if (!input) {
+                document.getElementById('reverseResult').textContent = 'Lütfen tersine çevrilecek metin girin.';
+                return;
+            }
+
+            let result;
+            if (type === 'chars') {
+                result = input.split('').reverse().join('');
+            } else {
+                result = input.split(' ').reverse().join(' ');
+            }
+
+            document.getElementById('reverseResult').textContent = result;
+        }
+
+        function clearReverse() {
+            document.getElementById('reverseInput').value = '';
+            document.getElementById('reverseResult').textContent = 'Sonuç burada görünecek...';
+        }
+
+        function processMorse() {
+            const input = document.getElementById('morseInput').value.trim();
+            const type = document.getElementById('morseType').value;
+            
+            if (!input) {
+                document.getElementById('morseResult').textContent = 'Lütfen dönüştürülecek metin girin.';
+                return;
+            }
+
+            let result;
+            if (type === 'encode') {
+                result = input.toUpperCase().split('').map(char => morseCode[char] || char).join(' ');
+            } else {
+                result = input.split(' ').map(code => reverseMorse[code] || code).join('');
+            }
+
+            document.getElementById('morseResult').textContent = result;
+        }
+
+        function clearMorse() {
+            document.getElementById('morseInput').value = '';
+            document.getElementById('morseResult').textContent = 'Sonuç burada görünecek...';
+        }
+
+        function processBinary() {
+            const input = document.getElementById('binaryInput').value.trim();
+            const type = document.getElementById('binaryType').value;
+            
+            if (!input) {
+                document.getElementById('binaryResult').textContent = 'Lütfen dönüştürülecek metin girin.';
+                return;
+            }
+
+            let result;
+            try {
+                if (type === 'encode') {
+                    result = input.split('').map(char => char.charCodeAt(0).toString(2).padStart(8, '0')).join(' ');
+                } else {
+                    result = input.split(' ').map(binary => String.fromCharCode(parseInt(binary, 2))).join('');
+                }
+            } catch (e) {
+                result = 'Geçersiz format!';
+            }
+
+            document.getElementById('binaryResult').textContent = result;
+        }
+
+        function clearBinary() {
+            document.getElementById('binaryInput').value = '';
+            document.getElementById('binaryResult').textContent = 'Sonuç burada görünecek...';
+        }
+
+        function processCaesar() {
+            const input = document.getElementById('caesarInput').value;
+            const shift = parseInt(document.getElementById('caesarShift').value);
+            const type = document.getElementById('caesarType').value;
+            
+            if (!input) {
+                document.getElementById('caesarResult').textContent = 'Lütfen işlenecek metin girin.';
+                return;
+            }
+
+            const actualShift = type === 'decode' ? -shift : shift;
+            const result = input.split('').map(char => {
+                if (char.match(/[a-zA-Z]/)) {
+                    const code = char.charCodeAt(0);
+                    const base = code >= 65 && code <= 90 ? 65 : 97;
+                    return String.fromCharCode(((code - base + actualShift + 26) % 26) + base);
+                }
+                return char;
+            }).join('');
+
+            document.getElementById('caesarResult').textContent = result;
+        }
+
+        function clearCaesar() {
+            document.getElementById('caesarInput').value = '';
+            document.getElementById('caesarResult').textContent = 'Sonuç burada görünecek...';
+        }
+
+        function processBase64() {
+            const input = document.getElementById('base64Input').value.trim();
+            const type = document.getElementById('base64Type').value;
+            
+            if (!input) {
+                document.getElementById('base64Result').textContent = 'Lütfen dönüştürülecek metin girin.';
+                return;
+            }
+
+            let result;
+            try {
+                if (type === 'encode') {
+                    result = btoa(unescape(encodeURIComponent(input)));
+                } else {
+                    result = decodeURIComponent(escape(atob(input)));
+                }
+            } catch (e) {
+                result = 'Geçersiz format!';
+            }
+
+            document.getElementById('base64Result').textContent = result;
+        }
+
+        function clearBase64() {
+            document.getElementById('base64Input').value = '';
+            document.getElementById('base64Result').textContent = 'Sonuç burada görünecek...';
+        }
+
+        function processCase(type) {
+            const input = document.getElementById('caseInput').value;
+            
+            if (!input) {
+                document.getElementById('caseResult').textContent = 'Lütfen formatlanacak metin girin.';
+                return;
+            }
+
+            let result;
+            switch (type) {
+                case 'upper':
+                    result = input.toUpperCase();
+                    break;
+                case 'lower':
+                    result = input.toLowerCase();
+                    break;
+                case 'title':
+                    result = input.replace(/\w\S*/g, txt => 
+                        txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+                    break;
+                case 'sentence':
+                    result = input.toLowerCase().replace(/(^\w|[.!?]\s*\w)/g, txt => 
+                        txt.toUpperCase());
+                    break;
+            }
+
+            document.getElementById('caseResult').textContent = result;
+        }
+
+        function clearCase() {
+            document.getElementById('caseInput').value = '';
+            document.getElementById('caseResult').textContent = 'Sonuç burada görünecek...';
+        }
+    </script>
+</body>
+</html>
